@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RATE//CHARM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EDF1F6;
+    --panel: #FFFFFF;
+    --grid-line: rgba(15, 20, 32, 0.06);
+    --ink: #131A26;
+    --ink-dim: rgba(19, 26, 38, 0.6);
+    --cyan: #0FA99A;
+    --magenta: #D6367F;
+    --amber: #C97A17;
+    --border: rgba(19, 26, 38, 0.14);
+    --panel-shadow: rgba(19, 26, 38, 0.12);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #0F1420;
+      --panel: #161C2C;
+      --grid-line: rgba(255, 255, 255, 0.045);
+      --ink: #E8ECF5;
+      --ink-dim: rgba(232, 236, 245, 0.6);
+      --cyan: #4CE0D2;
+      --magenta: #FF5FA8;
+      --amber: #FFB84C;
+      --border: rgba(255, 255, 255, 0.12);
+      --panel-shadow: rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1420;
+    --panel: #161C2C;
+    --grid-line: rgba(255, 255, 255, 0.045);
+    --ink: #E8ECF5;
+    --ink-dim: rgba(232, 236, 245, 0.6);
+    --cyan: #4CE0D2;
+    --magenta: #FF5FA8;
+    --amber: #FFB84C;
+    --border: rgba(255, 255, 255, 0.12);
+    --panel-shadow: rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 100% 32px,
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 32px 100%,
+      var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 18px 90px;
+  }
+
+  .tag {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    color: var(--cyan);
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0 0 34px;
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+
+  .rig {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chain-svg { display: block; margin-bottom: -2px; }
+
+  .coin-wrap {
+    position: relative;
+    width: 108px;
+    height: 108px;
+    margin-bottom: -30px;
+    z-index: 2;
+  }
+  .coin-glow {
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--magenta) 0%, transparent 70%);
+    opacity: 0.35;
+    filter: blur(2px);
+  }
+  .coin {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(145deg, var(--panel), var(--bg));
+    border: 2px solid var(--magenta);
+    box-shadow: 0 0 0 4px rgba(0,0,0,0), 0 10px 24px var(--panel-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .coin::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 1px dashed var(--border);
+  }
+  .coin-symbol {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 2.4rem;
+    color: var(--magenta);
+    transition: content 0.2s ease;
+  }
+
+  .panel {
+    position: relative;
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 44px 26px 28px;
+    box-shadow: 0 18px 40px var(--panel-shadow);
+  }
+
+  .bracket {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--cyan);
+  }
+  .bracket.tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .bracket.tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+  .bracket.bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+  .bracket.br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+  .readout-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    display: block;
+    margin: 0 0 8px 2px;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.9rem;
+    padding: 12px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    margin-bottom: 22px;
+  }
+
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  select {
+    width: 100%;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 11px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    text-align: center;
+  }
+
+  input:focus-visible, select:focus-visible, button:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+  }
+
+  .swap {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    border: 1px solid var(--cyan);
+    background: transparent;
+    color: var(--cyan);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .swap:hover { background: var(--cyan); color: var(--bg); }
+
+  .go {
+    width: 100%;
+    padding: 15px;
+    border-radius: 4px;
+    border: none;
+    background: var(--amber);
+    color: var(--bg);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+  .go:disabled { opacity: 0.55; cursor: progress; }
+  .go:active { transform: translateY(1px); }
+
+  .result {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    display: none;
+  }
+  .result.show { display: block; }
+  .result .big {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--cyan);
+    word-break: break-word;
+  }
+  .result .rate {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    margin-top: 4px;
+  }
+  .result.error { border-color: var(--magenta); }
+  .result.error .big { color: var(--magenta); font-size: 1rem; font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; }
+
+  footer {
+    margin-top: 22px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-dim);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .swap, .go { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <p class="tag">RATE // CHARM MODULE</p>
+  <h1>Live Currency Converter</h1>
+
+  <div class="rig">
+    <svg class="chain-svg" width="60" height="40" viewBox="0 0 60 40" aria-hidden="true">
+      <path d="M30 0 V14" stroke="var(--cyan)" stroke-width="2" fill="none" opacity="0.7"/>
+      <circle cx="30" cy="18" r="4" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+      <path d="M30 22 V32" stroke="var(--cyan)" stroke-width="2" fill="none" opacity="0.7"/>
+    </svg>
+
+    <div class="coin-wrap">
+      <div class="coin-glow" aria-hidden="true"></div>
+      <div class="coin">
+        <span class="coin-symbol" id="coinSymbol">$</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="bracket tl" aria-hidden="true"></span>
+      <span class="bracket tr" aria-hidden="true"></span>
+      <span class="bracket bl" aria-hidden="true"></span>
+      <span class="bracket br" aria-hidden="true"></span>
+
+      <label class="readout-label" for="amount">INPUT AMOUNT</label>
+      <input type="number" id="amount" value="100" min="0" step="any" inputmode="decimal">
+
+      <div class="pair">
+        <div>
+          <label class="readout-label" for="from">SOURCE</label>
+          <select id="from"></select>
+        </div>
+        <button class="swap" id="swap" type="button" aria-label="Swap currencies">⇄</button>
+        <div>
+          <label class="readout-label" for="to">TARGET</label>
+          <select id="to"></select>
+        </div>
+      </div>
+
+      <button class="go" id="convertBtn" type="button">EXECUTE CONVERSION</button>
+
+      <div class="result" id="result" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <footer>LIVE FEED · FRANKFURTER.APP</footer>
+
+<script>
+(function () {
+  const CURRENCIES = ["USD","EUR","GBP","JPY","KRW","INR","AUD","CAD","CHF","CNY","SGD","THB"];
+  const SYMBOLS = {
+    USD: "$", EUR: "€", GBP: "£", JPY: "¥", KRW: "₩", INR: "₹",
+    AUD: "$", CAD: "$", CHF: "₣", CNY: "¥", SGD: "$", THB: "฿"
+  };
+  const fromSel = document.getElementById('from');
+  const toSel = document.getElementById('to');
+  const amountEl = document.getElementById('amount');
+  const resultEl = document.getElementById('result');
+  const btn = document.getElementById('convertBtn');
+  const swapBtn = document.getElementById('swap');
+  const coinSymbol = document.getElementById('coinSymbol');
+
+  function fillSelect(sel, selected) {
+    sel.innerHTML = '';
+    CURRENCIES.forEach(function (c) {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      if (c === selected) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+  fillSelect(fromSel, 'USD');
+  fillSelect(toSel, 'KRW');
+
+  function updateCoin() {
+    coinSymbol.textContent = SYMBOLS[toSel.value] || toSel.value.charAt(0);
+  }
+  updateCoin();
+  toSel.addEventListener('change', updateCoin);
+
+  swapBtn.addEventListener('click', function () {
+    const a = fromSel.value;
+    fromSel.value = toSel.value;
+    toSel.value = a;
+    updateCoin();
+  });
+
+  async function convert() {
+    const amount = parseFloat(amountEl.value);
+    const from = fromSel.value;
+    const to = toSel.value;
+    resultEl.classList.remove('show', 'error');
+
+    if (isNaN(amount) || amount < 0) {
+      resultEl.innerHTML = '<div class="big">INVALID INPUT — enter a positive number</div>';
+      resultEl.classList.add('show', 'error');
+      return;
+    }
+    if (from === to) {
+      resultEl.innerHTML = '<div class="big">' + amount.toFixed(2) + ' ' + from + ' — no conversion needed</div>';
+      resultEl.classList.add('show');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'SYNCING...';
+    try {
+      const url = '/convert?amount=' + amount + '&from=' + from + '&to=' + to;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('bad response');
+      const data = await res.json();
+      const converted = data.rates[to];
+      if (converted === undefined) throw new Error('missing rate');
+      resultEl.innerHTML =
+        '<div class="big">' + amount.toFixed(2) + ' ' + from + ' = ' + converted.toFixed(2) + ' ' + to + '</div>' +
+        '<div class="rate">RATE — 1 ' + from + ' = ' + (converted / amount).toFixed(4) + ' ' + to + '</div>';
+      resultEl.classList.add('show');
+    } catch (e) {
+      resultEl.innerHTML = '<div class="big">SIGNAL LOST — could not fetch live rate, try again</div>';
+      resultEl.classList.add('show', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'EXECUTE CONVERSION';
+    }
+  }
+
+  btn.addEventListener('click', convert);
+  amountEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') convert(); });
+})();
+</script>
+</body>
+</html>
